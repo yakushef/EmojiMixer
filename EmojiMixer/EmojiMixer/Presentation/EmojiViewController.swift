@@ -12,9 +12,14 @@ final class EmojiViewController: UIViewController {
     var emojiCollection: UICollectionView!
     
     private let emojiList = ["🍇", "🍈", "🍉", "🍊", "🍋", "🍌", "🍍", "🥭", "🍎", "🍏", "🍐", "🍒", "🍓", "🫐", "🥝", "🍅", "🫒", "🥥", "🥑", "🍆", "🥔", "🥕", "🌽", "🌶️", "🫑", "🥒", "🥬", "🥦", "🧄", "🧅", "🍄"]
+    
+    private var visibleEmoji: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Undo", style: .plain, target: self, action: #selector(undoLastEmoji))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addNewEmoji))
         
         let layout = UICollectionViewFlowLayout()
         emojiCollection = UICollectionView(frame: view.safeAreaLayoutGuide.layoutFrame, collectionViewLayout: layout)
@@ -24,6 +29,30 @@ final class EmojiViewController: UIViewController {
         emojiCollection.register(EmojiCollectionCell.self, forCellWithReuseIdentifier: "Emoji Cell")
         
         view.addSubview(emojiCollection)
+    }
+    
+    @objc func addNewEmoji() {
+        let nextEmojiIndex = visibleEmoji.count
+        
+        if visibleEmoji.count < emojiList.count {
+            visibleEmoji.append(emojiList[visibleEmoji.count])
+        }
+        
+        emojiCollection.performBatchUpdates {
+            emojiCollection.insertItems(at: [IndexPath(item: nextEmojiIndex, section: 0)])
+        }
+    }
+    
+    @objc func undoLastEmoji() {
+        let lastEmojiIndex = visibleEmoji.count - 1
+        
+        if visibleEmoji.count > 0 {
+            visibleEmoji.removeLast()
+        }
+        
+        emojiCollection.performBatchUpdates {
+            emojiCollection.deleteItems(at: [IndexPath(item: lastEmojiIndex, section: 0)])
+        }
     }
 }
 
@@ -43,17 +72,17 @@ extension EmojiViewController: UICollectionViewDelegateFlowLayout {
 
 extension EmojiViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return emojiList.count
+        return visibleEmoji.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = emojiCollection.dequeueReusableCell(withReuseIdentifier: "Emoji Cell", for: indexPath) as? EmojiCollectionCell else { return UICollectionViewCell() }
 
-        cell.label.text = emojiList[indexPath.row]
+        cell.label.text = visibleEmoji[indexPath.row]
         return cell
     }
 }
 
 #Preview {
-    return EmojiViewController()
+    return UINavigationController(rootViewController: EmojiViewController())
 }

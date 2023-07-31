@@ -17,7 +17,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: scene)
-        window.rootViewController = EmojiViewController()
+        
+        let navigator = UINavigationController(rootViewController: EmojiViewController())
+        window.rootViewController = navigator
 
         self.window = window
         window.makeKeyAndVisible()
