@@ -36,7 +36,7 @@ final class EmojiViewController: UIViewController {
         
         if visibleEmoji.count < emojiList.count {
             visibleEmoji.append(emojiList[visibleEmoji.count])
-        }
+        } else { return }
         
         emojiCollection.performBatchUpdates {
             emojiCollection.insertItems(at: [IndexPath(item: nextEmojiIndex, section: 0)])
@@ -48,7 +48,7 @@ final class EmojiViewController: UIViewController {
         
         if visibleEmoji.count > 0 {
             visibleEmoji.removeLast()
-        }
+        } else { return }
         
         emojiCollection.performBatchUpdates {
             emojiCollection.deleteItems(at: [IndexPath(item: lastEmojiIndex, section: 0)])
